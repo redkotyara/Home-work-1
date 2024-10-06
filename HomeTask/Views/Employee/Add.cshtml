@@ -1,0 +1,99 @@
+﻿@using HomeTask.BusinessLogic.Models
+@model HomeTask.BusinessLogic.Models.CreateOrUpdateEmployeeModel
+
+@{
+    var departments = ViewData["Departments"] as IEnumerable<DepartmentModel> ?? new List<DepartmentModel>();
+    var programingLanguages = ViewData["ProgramingLanguages"] as IEnumerable<ProgramingLanguageModel> ?? new List<ProgramingLanguageModel>();
+    var genders = ViewData["Genders"] as IEnumerable<GenderModel> ?? new List<GenderModel>();
+}
+
+<!DOCTYPE html>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/jquery")
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#FirstName").autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: "/names/popular",
+                    type: 'GET',
+                    dataType: "json",
+                    data: {
+                        Prefix: request.term
+                    },
+                    success: function(data) {
+                        response($.map(data, function(item) {
+                            return { label: item.Name, value: item.Name }
+                        }))
+                    }
+                })
+            }
+        })
+    })
+</script>
+
+<html>
+<head>
+    <title>title</title>
+</head>
+<body>
+@using (Html.BeginForm("AddEmployee", "Employee", FormMethod.Post))
+{
+    <div class="form-group">
+        @Html.LabelFor(x => x.Age, "Enter age")
+        @Html.TextBoxFor(x => x.Age, new { @class = "form-control",  type="number" })
+        @Html.ValidationMessageFor(x => x.Age, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(x => x.FirstName, "Enter first name")
+        @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control", id = "FirstName" })
+        @Html.ValidationMessageFor(x => x.FirstName, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(x => x.LastName, "Enter last name")
+        @Html.TextBoxFor(x => x.LastName, new { @class = "form-control"  })
+        @Html.ValidationMessageFor(x => x.LastName, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(x => x.GenderId, "Enter gender")
+        @Html.DropDownListFor(x => x.GenderId, GetDefaultSelectListItem().Concat(genders.Select(x => new SelectListItem
+        {
+            Text = x.GenderName,
+            Value = x.GenderId.ToString()
+        })).ToArray(), new { @class = "form-control" })
+        @Html.ValidationMessageFor(x => x.GenderId, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(x => x.DepartmentId, "Select department")
+        @Html.DropDownListFor(x => x.DepartmentId, GetDefaultSelectListItem().Concat(departments.Select(x => new SelectListItem
+        {
+            Text = x.DepartmentName,
+            Value = x.DepartmentId.ToString()
+        })).ToArray(), new { @class = "form-control" })
+        @Html.ValidationMessageFor(x => x.DepartmentId, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(x => x.ProgramingLanguageIds, "Select your programing languages")
+        @Html.ListBoxFor(x => x.ProgramingLanguageIds, GetDefaultSelectListItem().Concat(programingLanguages.Select(x => new SelectListItem
+        {
+            Text = x.ProgramingLanguageName,
+            Value = x.ProgramingLanguageId.ToString()
+        })).ToArray(), new { @class = "form-control" })
+        @Html.ValidationMessageFor(x => x.ProgramingLanguageIds, "", new { @class = "text-danger" })
+    </div>
+    <button type="submit" class="btn btn-default">
+        Confirm
+    </button>
+}
+</body>
+</html>
+
+@functions
+{
+    private IEnumerable<SelectListItem> GetDefaultSelectListItem()
+    {
+        return new[] { new SelectListItem() };
+    }
+}

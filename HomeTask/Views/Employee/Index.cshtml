@@ -1,0 +1,193 @@
+﻿@using HomeTask.BusinessLogic.Models
+@model PaginationResult<EmployeeModel>
+@{
+    ViewBag.Title = "Home Page";
+    var departments = ViewData["Departments"] as IEnumerable<DepartmentModel> ?? new List<DepartmentModel>();
+    var programingLanguages = ViewData["ProgramingLanguages"] as IEnumerable<ProgramingLanguageModel> ?? new List<ProgramingLanguageModel>();
+    var genders = ViewData["Genders"] as IEnumerable<GenderModel> ?? new List<GenderModel>();
+
+    var lastName = ViewData["lastName"] as string;
+    var departmentId = ViewData["departmentId"] as int?;
+    var firstName = ViewData["firstName"] as string;
+    var age = ViewData["age"] as int?;
+    var programLanguageId = ViewData["programLanguageId"] as int?;
+    var genderId = ViewData["genderId"] as int?;
+}
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/jquery")
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#FirstName").autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: "/names/popular",
+                    type: 'GET',
+                    dataType: "json",
+                    data: {
+                        Prefix: request.term
+                    },
+                    success: function(data) {
+                        response($.map(data, function(item) {
+                            return { label: item.Name, value: item.Name }
+                        }))
+                    }
+                })
+            }
+        })
+    })
+</script>
+
+<h1>Filter</h1>
+@using (Html.BeginForm("GetEmployees", "Employee", FormMethod.Get))
+{
+<div class="form-group">
+    @Html.Label("Last name")
+    @Html.TextBox("lastName", string.Empty, new { @class = "form-control", value = lastName })
+</div>
+
+<div class="form-group">
+    @Html.Label("First name")
+    @Html.TextBox("firstName", string.Empty, new { @class = "form-control", value = firstName, id = "FirstName" })
+</div>
+
+<div class="form-group">
+    @Html.Label("Age")
+    @Html.TextBox("age", string.Empty, new { @class = "form-control", type="number", value = age?.ToString() })
+</div>
+
+<div class="form-group">
+    @Html.Label("Gender")
+    @Html.DropDownList("genderId", GetDefaultSelectListItem().Concat(genders.Select(x => new SelectListItem
+    {
+        Text = x.GenderName,
+        Value = x.GenderId.ToString(),
+        Selected = x.GenderId == genderId
+    })), new { @class = "form-control" })
+</div>
+
+<div class="form-group">
+    @Html.Label("Programing language")
+    @Html.DropDownList("programLanguageId", GetDefaultSelectListItem().Concat(programingLanguages.Select(x => new SelectListItem
+    {
+        Text = x.ProgramingLanguageName,
+        Value = x.ProgramingLanguageId.ToString(),
+        Selected = x.ProgramingLanguageId == programLanguageId
+    })), new { @class = "form-control" })
+</div>
+
+<div class="form-group">
+    @Html.Label("Department")
+    @Html.DropDownList("departmentId", GetDefaultSelectListItem().Concat(departments.Select(x => new SelectListItem
+    {
+        Text = x.DepartmentName,
+        Value = x.DepartmentId.ToString(),
+        Selected = x.DepartmentId == departmentId
+    })), new { @class = "form-control" })
+</div>
+
+@Html.Hidden("pageNumber", 1)
+
+<button type="submit" class="btn btn-default">
+    Search
+</button>
+}
+
+@if (Model.Items.Any())
+{
+    <h1>Employee list. Found @(Model.TotalItems) employees.</h1>
+    foreach (var employee in Model.Items)
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="form-group">
+                    @Html.LabelFor(x => employee.FirstName, new { @class = "card-title" })
+                    @Html.DisplayTextFor(x => employee.FirstName)
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(x => employee.LastName, new { @class = "card-title" })
+                    @Html.DisplayTextFor(x => employee.LastName)
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(x => employee.Age, new { @class = "card-title" })
+                    @Html.DisplayTextFor(x => employee.Age)
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(x => employee.Gender.GenderName, new { @class = "card-title" })
+                    @Html.DisplayTextFor(x => employee.Gender.GenderName)
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(x => employee.Department.DepartmentName, new { @class = "card-title" })
+                    @Html.DisplayTextFor(x => employee.Department.DepartmentName)
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(x => employee.Department.FloorNumber, new { @class = "card-title" })
+                    @Html.DisplayTextFor(x => employee.Department.FloorNumber)
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Programing languages", new { @class = "card-title" })
+                    <div>@(string.Join(", ", employee.ProgramingLanguages.Select(pl => pl.ProgramingLanguageName)))</div>
+                </div>
+
+                <div>
+                    @Html.ActionLink("Edit", "Edit", new { id = employee.EmployeeId }, new { @class = "btn btn-default " })
+                </div>
+                <br/>
+                <div>
+                    @Html.ActionLink("Delete", "Delete", new { id = employee.EmployeeId }, new { @class = "btn btn-danger" })
+                </div>
+                <br/>
+            </div>
+        </div>
+    }
+
+    var totalPages = (int)Math.Ceiling((double)Model.TotalItems / Model.PageSize);
+    var currentPage = Model.PageNumber;
+    if (currentPage > 1)
+    {
+        @Html.ActionLink("Previous page", "GetEmployees", new
+        {
+            pageNumber = currentPage - 1,
+            departmentId = departmentId,
+            age = age,
+            genderId = genderId,
+            firstName = firstName,
+            programLanguageId = programLanguageId,
+            lastName = lastName
+        }, new { @class = "btn btn-default" })
+    }
+    
+    if (currentPage < totalPages)
+    {
+        @Html.ActionLink("Next page", "GetEmployees", new
+        {
+            pageNumber = currentPage + 1,
+            departmentId = departmentId,
+            age = age,
+            genderId = genderId,
+            firstName = firstName,
+            programLanguageId = programLanguageId,
+            lastName = lastName
+        }, new { @class = "btn btn-default" })
+    }
+}
+else
+{
+    <h1>Employees are not found</h1>
+}
+
+@functions
+{
+    private IEnumerable<SelectListItem> GetDefaultSelectListItem()
+    {
+        return new[] { new SelectListItem() };
+    }
+}

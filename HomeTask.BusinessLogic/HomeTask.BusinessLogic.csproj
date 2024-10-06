@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
+            Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{9E59B40F-760C-47F0-8C09-1956895028A4}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>HomeTask.BusinessLogic</RootNamespace>
+        <AssemblyName>HomeTask.BusinessLogic</AssemblyName>
+        <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <LangVersion>8</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="AutoMapper, Version=10.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+          <HintPath>..\packages\AutoMapper.10.1.1\lib\net461\AutoMapper.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CSharp" />
+        <Reference Include="System"/>
+        <Reference Include="System.ComponentModel.DataAnnotations" />
+        <Reference Include="System.Core"/>
+        <Reference Include="System.Data"/>
+        <Reference Include="System.Web.Helpers.Crypto, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\System.Web.Helpers.Crypto.3.2.3\lib\net40\System.Web.Helpers.Crypto.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Xml"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Exceptions\UsernameIsUsedException.cs" />
+        <Compile Include="MapperConfig\BusinessLogicMapperConfig.cs" />
+        <Compile Include="Models\CreateOrUpdateEmployeeModel.cs" />
+        <Compile Include="Models\CreateUserModel.cs" />
+        <Compile Include="Models\DepartmentModel.cs" />
+        <Compile Include="Models\EmployeeModel.cs" />
+        <Compile Include="Models\GenderModel.cs" />
+        <Compile Include="Models\GetEmployeesFilter.cs" />
+        <Compile Include="Models\PaginationResult.cs" />
+        <Compile Include="Models\ProgramingLanguageModel.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs"/>
+        <Compile Include="Services\DepartmentService.cs" />
+        <Compile Include="Services\EmployeeService.cs" />
+        <Compile Include="Services\GenderService.cs" />
+        <Compile Include="Services\Interfaces\IDepartmentService.cs" />
+        <Compile Include="Services\Interfaces\IEmployeeService.cs" />
+        <Compile Include="Services\Interfaces\IGenderService.cs" />
+        <Compile Include="Services\Interfaces\IPopularNamesService.cs" />
+        <Compile Include="Services\Interfaces\IProgramingLanguageService.cs" />
+        <Compile Include="Services\Interfaces\IUserService.cs" />
+        <Compile Include="Services\PopularNamesService.cs" />
+        <Compile Include="Services\ProgramingLanguageService.cs" />
+        <Compile Include="Services\UserService.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\HomeTask.DataAccess\HomeTask.DataAccess.csproj">
+        <Project>{edb95a9c-03b9-444f-a5b1-21131fe07647}</Project>
+        <Name>HomeTask.DataAccess</Name>
+      </ProjectReference>
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="packages.config" />
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+
+</Project>
